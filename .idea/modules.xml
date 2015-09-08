@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DSL.iml" filepath="$PROJECT_DIR$/DSL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../DSLGenerator/DSLGenerator.iml" filepath="$PROJECT_DIR$/../DSLGenerator/DSLGenerator.iml" />
     </modules>
   </component>
 </project>

@@ -7,6 +7,12 @@ SensorDSL.with {
             cancel "myCancelCallback"
             error "myErrorCallback"
         }
+        take video store_in "videoPath" set_properties {
+            quality high
+            limiting {
+                duration to: 10 size to: 20
+            }
+        }
     }
 
     accelerometer {

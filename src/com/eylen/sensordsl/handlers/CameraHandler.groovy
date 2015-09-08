@@ -2,42 +2,42 @@ package com.eylen.sensordsl.handlers
 
 import com.eylen.sensordsl.enums.MediaType
 
-class CameraHandler {
+class CameraHandler extends AbstractHandler{
     //Silent words
     MediaType picture = MediaType.PICTURE
     MediaType video = MediaType.VIDEO
 
-    String methodName = "cameraDSLHandler"
-    String mediaType
+    String methodName
+    MediaType mediaType
     String path
 
     CameraCallbackHandler callbackHandler
+    VideoPropertiesHandler videoProperties
 
     public CameraHandler(){
         callbackHandler = new CameraCallbackHandler()
     }
-
-    /*def take(String mediaType){
-        [store_in: {path->
-            this.path = path
-            [on: { Closure closure->
-                def code = closure.rehydrate(callbackHandler, null, null)
-                code.resolveStrategy = Closure.DELEGATE_ONLY
-                code.call()
-            }]
-        }]
-    }*/
 
     CameraHandler with_name(String methodName){
         this.methodName = methodName
         this
     }
 
-    CameraHandler take(String mediaType) {
-        if (!MediaType.values().collect{it.toString()}.contains(mediaType.toUpperCase())){
-            throw new Exception("Only PICTURE or VIDEO can be taken")
-        }
+    CameraHandler take(MediaType mediaType) {
         this.mediaType = mediaType
+        if (mediaType == video){
+            this.videoProperties = new VideoPropertiesHandler()
+        }
+        this
+    }
+
+    CameraHandler set_properties (@DelegatesTo(VideoPropertiesHandler) Closure closure){
+        if (this.mediaType == video) {
+            this.videoProperties = new VideoPropertiesHandler()
+            def code = closure.rehydrate(videoProperties, null, null)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code.call()
+        }
         this
     }
 
@@ -71,5 +71,64 @@ class CameraHandler {
             this.errorCallback = methodName
             this
         }
+    }
+
+    class VideoPropertiesHandler {
+        //TODO sobrescribir integer para que admita seconds/minutes etc y bytes, kbytes, megabyte
+        //Silent words
+        String to = "to"
+        int high = 1
+        int low = 0
+
+        public VideoPropertiesHandler(){
+            qualityValue = null
+            durationLimit = null
+            sizeLimit = null
+        }
+
+        Integer qualityValue
+        Integer durationLimit
+        Integer sizeLimit
+
+        VideoPropertiesHandler quality(int quality){
+            this.qualityValue = quality
+            this
+        }
+
+        VideoPropertiesHandler limiting(Closure closure){
+            VideoLimitHandler handler = new VideoLimitHandler()
+            def code = closure.rehydrate(handler, null, null)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code.call()
+            this
+        }
+
+        class VideoLimitHandler {
+            VideoLimitHandler duration(int seconds){
+                durationLimit = seconds
+                this
+            }
+
+            VideoLimitHandler duration(Map<String, Integer> args){
+                if (args.size() > 0) {
+                    durationLimit = args[args.keySet()[0]]
+                }
+                this
+            }
+
+            VideoLimitHandler size(int bytes){
+                sizeLimit = bytes
+                this
+            }
+
+            VideoLimitHandler size(Map<String, Integer> args){
+                if (args.size() > 0) {
+                    sizeLimit = args[args.keySet()[0]]
+                }
+                this
+            }
+        }
+
+
     }
 }

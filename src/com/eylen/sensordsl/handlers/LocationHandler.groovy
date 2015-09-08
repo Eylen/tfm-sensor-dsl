@@ -1,8 +1,9 @@
 package com.eylen.sensordsl.handlers
 
+import com.eylen.sensordsl.enums.LocationPriorityType
 import com.eylen.sensordsl.enums.TrackType
 
-class LocationHandler {
+class LocationHandler  extends AbstractHandler{
     //Silent words
     String last_location = "last_location"
     TrackType automatically = TrackType.AUTO
@@ -17,10 +18,10 @@ class LocationHandler {
     }
 
     class LastKnownLocationHandler {
-        String varName
+        String callbackMethod
 
-        void store_in(String varName) {
-            this.varName = varName
+        void call(String callbackMethod) {
+            this.callbackMethod= callbackMethod
         }
     }
 
@@ -30,13 +31,28 @@ class LocationHandler {
     }
 
     class LocationTrackingHandler {
+        //Silent words
+        LocationPriorityType balanced = LocationPriorityType.BALANCED
+        LocationPriorityType accurate = LocationPriorityType.HIGH_ACCURACY
+        LocationPriorityType low_power = LocationPriorityType.LOW_POWER
+        LocationPriorityType power_safe = LocationPriorityType.NO_POWER
+
         TrackType trackingType
         String callbackMethod
-        String startMethod = "startTrackingLocation"
-        String stopMethod = "stopTrackingLocation"
+        String startMethod
+        String stopMethod
+        LocationTrackingProperties locationTrackingProperties
 
         public LocationTrackingHandler(TrackType trackType){
             this.trackingType = trackType
+        }
+
+        LocationTrackingHandler with(@DelegatesTo(LocationTrackingProperties)Closure closure){
+            locationTrackingProperties = new LocationTrackingProperties()
+            def code = closure.rehydrate(locationTrackingProperties, null, null)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code.call()
+            this
         }
 
         LocationTrackingHandler calling(String methodName) {
@@ -53,5 +69,28 @@ class LocationHandler {
             this.stopMethod = methodName
             this
         }
+    }
+
+    class LocationTrackingProperties {
+        //TODO añadir seconds/minutes etc
+        int interval
+        int fastestInterval
+        LocationPriorityType priorityType
+
+        LocationTrackingProperties each(int interval){
+            this.interval = interval
+            this
+        }
+
+        LocationTrackingProperties minimum(int fastestInterval){
+            this.fastestInterval = fastestInterval
+            this
+        }
+
+        LocationTrackingProperties accuracy(LocationPriorityType accuracy){
+            this.priorityType = accuracy
+            this
+        }
+
     }
 }
