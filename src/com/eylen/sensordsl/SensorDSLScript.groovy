@@ -13,16 +13,13 @@ abstract class SensorDSLScript extends Script{
     def run(){
         this.sensorDSL = this.binding.sensorDSL
         String dirPath = new File(getClass().protectionDomain.codeSource.location.path).parent
-        println "dirPath = $dirPath"
         sensorDSL.scriptFile = getClass().protectionDomain.codeSource.location.path
         String fileName = sensorDSL.scriptFile - new File(getClass().protectionDomain.codeSource.location.path).parent
         fileName = fileName.substring(0, fileName.indexOf(".dsl.groovy"))
         def codeFiles = new FileNameFinder().getFileNames(dirPath, fileName+".*", fileName)
-        File codeFile = null
         if (codeFiles.size() > 0){
-            codeFile = new File(codeFiles[0])
+            this.binding.codeFile = new File(codeFiles[0])
         }
-        println codeFile
         scriptBody()
     }
 

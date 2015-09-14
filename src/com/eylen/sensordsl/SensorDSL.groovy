@@ -30,13 +30,12 @@ class SensorDSL {
 
     }
 
-//    public static SensorDSL with(@DelegatesTo(SensorDSL) Closure closure){
-////        SensorDSL sensorDSL = new SensorDSL()
-//        def code = closure.rehydrate(this, null, null)
-//        code.resolveStrategy = Closure.DELEGATE_ONLY
-//        code()
-//        this
-//    }
+    public static SensorDSL with(@DelegatesTo(SensorDSL) Closure closure){
+        def code = closure.rehydrate(this, null, null)
+        code.resolveStrategy = Closure.DELEGATE_ONLY
+        code()
+        this
+    }
 
     def camera(@DelegatesTo(CameraHandler) Closure closure){
         CameraHandler delegate = new CameraHandler()
