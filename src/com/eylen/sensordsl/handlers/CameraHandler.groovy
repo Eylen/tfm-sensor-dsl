@@ -1,5 +1,7 @@
 package com.eylen.sensordsl.handlers
 
+import com.eylen.sensordsl.Permission
+import com.eylen.sensordsl.SensorDSL
 import com.eylen.sensordsl.enums.MediaType
 
 class CameraHandler extends AbstractHandler{
@@ -14,8 +16,11 @@ class CameraHandler extends AbstractHandler{
     CameraCallbackHandler callbackHandler
     VideoPropertiesHandler videoProperties
 
+    List<Permission> permissionList
+
     public CameraHandler(){
         callbackHandler = new CameraCallbackHandler()
+        permissionList = new ArrayList<>()
     }
 
     CameraHandler with_name(String methodName){
@@ -27,6 +32,9 @@ class CameraHandler extends AbstractHandler{
         this.mediaType = mediaType
         if (mediaType == video){
             this.videoProperties = new VideoPropertiesHandler()
+            permissionList << Permission.VIDEO
+        } else {
+            permissionList << Permission.CAMERA
         }
         this
     }
@@ -43,6 +51,7 @@ class CameraHandler extends AbstractHandler{
 
     CameraHandler store_in(String path){
         this.path = path
+        permissionList << Permission.STORE
         this
     }
 

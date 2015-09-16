@@ -1,5 +1,6 @@
 package com.eylen.sensordsl.handlers
 
+import com.eylen.sensordsl.Permission
 import com.eylen.sensordsl.enums.LocationPriorityType
 import com.eylen.sensordsl.enums.TrackType
 
@@ -11,6 +12,13 @@ class LocationHandler  extends AbstractHandler{
 
     LastKnownLocationHandler lastKnownLocationHandler
     LocationTrackingHandler locationTrackingHandler
+    List<Permission> permissionList
+
+    public LocationHandler(){
+        super()
+        this.permissionList = new ArrayList<>()
+        permissionList << Permission.COARSE_LOCATION
+    }
 
     LastKnownLocationHandler get(String last_location){
         lastKnownLocationHandler = new LastKnownLocationHandler()
@@ -89,6 +97,10 @@ class LocationHandler  extends AbstractHandler{
 
         LocationTrackingProperties accuracy(LocationPriorityType accuracy){
             this.priorityType = accuracy
+            if (accuracy == LocationPriorityType.HIGH_ACCURACY)
+                permissionList[0] = Permission.FINE_LOCATION
+            else
+                permissionList[0] = Permission.COARSE_LOCATION
             this
         }
 

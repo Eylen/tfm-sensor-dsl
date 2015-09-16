@@ -15,12 +15,16 @@ class SensorDSL {
     String codeFile
     String packageName
 
+    Set<Permission> permissionList
+
     public SensorDSL(){
         cameraHandlers = new ArrayList<>()
         motionSensorHandlers = new ArrayList<>()
         locationHandlers = new ArrayList<>()
         findCodeFile()
+        this.permissionList = new ArrayList<>()
     }
+
 
     private void findCodeFile(){
         extractPackageName()
@@ -42,6 +46,7 @@ class SensorDSL {
         def code = closure.rehydrate(delegate, null, null)
         code.resolveStrategy = Closure.DELEGATE_ONLY
         code()
+        permissionList.addAll delegate.permissionList
         cameraHandlers << delegate
         this
     }
@@ -69,6 +74,7 @@ class SensorDSL {
         def code = closure.rehydrate(delegate, null, null)
         code.resolveStrategy = Closure.DELEGATE_ONLY
         code()
+        permissionList.addAll delegate.permissionList
         locationHandlers << delegate
         this
     }
