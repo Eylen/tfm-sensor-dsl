@@ -3,6 +3,7 @@ package com.eylen.sensordsl.handlers
 import com.eylen.sensordsl.Permission
 import com.eylen.sensordsl.SensorDSL
 import com.eylen.sensordsl.enums.MediaType
+import groovy.time.TimeCategory
 
 class CameraHandler extends AbstractHandler{
     //Silent words
@@ -104,7 +105,7 @@ class CameraHandler extends AbstractHandler{
             this
         }
 
-        VideoPropertiesHandler limiting(Closure closure){
+        VideoPropertiesHandler limiting(@DelegatesTo(VideoLimitHandler) Closure closure){
             VideoLimitHandler handler = new VideoLimitHandler()
             def code = closure.rehydrate(handler, null, null)
             code.resolveStrategy = Closure.DELEGATE_ONLY
